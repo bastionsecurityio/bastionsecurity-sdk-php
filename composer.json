@@ -1,0 +1,17 @@
+{
+    "name": "bastionsecurity/sdk",
+    "description": "Official PHP SDK for Bastion Security — real-time bot detection and fraud prevention",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Bastion\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.1",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "homepage": "https://bastionsecurity.io"
+}
