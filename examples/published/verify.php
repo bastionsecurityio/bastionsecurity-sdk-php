@@ -7,7 +7,7 @@ function verifyRequest(array $request): array {
     $client = new BastionClient(
         getenv('BASTION_SITE_KEY'),
         getenv('BASTION_SECRET_KEY'),
-        getenv('BASTION_ENDPOINT') ?: 'https://api-production-761a5.up.railway.app/api/antibot'
+        getenv('BASTION_ENDPOINT') ?: 'https://api.bastionsecurity.io/api/antibot'
     );
     $decision = $client->verify($request);
     return ['allowed' => $decision['action'] === 'allow', 'decision' => $decision];

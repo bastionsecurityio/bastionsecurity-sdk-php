@@ -4,7 +4,7 @@ namespace Bastion;
 
 class BastionClient
 {
-    public const DEFAULT_ENDPOINT = 'https://api-production-761a5.up.railway.app/api/antibot';
+    public const DEFAULT_ENDPOINT = 'https://api.bastionsecurity.io/api/antibot';
     private string $endpoint;
     private int $timeout;
     private int $retries;
