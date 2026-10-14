@@ -6,7 +6,7 @@ if(!preg_match('/^http:\/\/(localhost|127\.0\.0\.1):/',$c['endpoint']))throw new
 function check(bool $value):void {if(!$value)throw new RuntimeException('Assertion failed');}
 $client=new BastionClient($c['site_key'],$c['secret'],$c['endpoint']);
 $fp=$client->fingerprint(['canvas_hash'=>'php-sdk-e2e','platform'=>'MacIntel','user_agent'=>'Mozilla/5.0 Chrome/130.0','language'=>'en-US','languages'=>['en-US']]);check(!empty($fp['token'])&&!empty($fp['expires_at']));
-$request=['token'=>$fp['token'],'context'=>['event_type'=>'login','account_id'=>'php-sdk-e2e','login_succeeded'=>false],'idempotency_key'=>bin2hex(random_bytes(16))];
+$request=['token'=>$fp['token'],'context'=>['event_type'=>'login','account_id'=>'php-sdk-e2e','login_succeeded'=>false],'idempotency_key'=>bin2hex(random_bytes(16)),'behavior'=>[],'environment'=>[],'headers'=>[]];
 $decision=$client->verify($request);check($client->verify($request)['request_id']===$decision['request_id']);check(is_array($decision['signals']));
 check(!empty($client->classify($fp['token'],['event_type'=>'signup','account_id'=>'php-sdk-classify'])['request_id']));
 check(!empty($client->track('checkout',['account_id'=>'php-sdk-track','order_amount'=>4,'payment_hash'=>'php-test-card'],$fp['token'])['request_id']));

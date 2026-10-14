@@ -55,9 +55,21 @@ class BastionClient
         foreach ($parts as $p) if (preg_match('/^v1=([0-9a-f]{64})$/D', $p, $m) && hash_equals($expected, $m[1])) return true;
         return false;
     }
+    // json_decode(..., true) loses the distinction between {} and [].
+    // Restore object-shaped API fields, leaving actual lists untouched.
+    private function jsonObjects(array $body): array
+    {
+        foreach (['context', 'fingerprint', 'behavior', 'environment', 'headers'] as $field) {
+            if (array_key_exists($field, $body) && $body[$field] === []) $body[$field] = new \stdClass();
+        }
+        if (isset($body['events']) && is_array($body['events'])) {
+            $body['events'] = array_map(fn($event) => is_array($event) ? $this->jsonObjects($event) : $event, $body['events']);
+        }
+        return $body;
+    }
     private function post(string $path, array $body): array
     {
-        $payload = json_encode($body, JSON_THROW_ON_ERROR);
+        $payload = json_encode($this->jsonObjects($body), JSON_THROW_ON_ERROR);
         $safe = !empty($body['idempotency_key']) || (!empty($body['events']) && count(array_filter($body['events'], fn($e) => !empty($e['idempotency_key']))) === count($body['events']));
         for ($attempt = 0;; $attempt++) {
             $ch = curl_init($this->endpoint.$path);

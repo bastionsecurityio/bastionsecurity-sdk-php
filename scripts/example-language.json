@@ -1,0 +1,7 @@
+{
+  "label": "PHP",
+  "command": [
+    "php",
+    "examples/cli.php"
+  ]
+}
