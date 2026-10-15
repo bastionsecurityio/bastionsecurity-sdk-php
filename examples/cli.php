@@ -29,10 +29,10 @@ try {
         if ($mode === 'verify') {
             if (count($argv) !== 4) throw new InvalidArgumentException('Usage: verify telemetry.json order.json');
             $telemetry = loadJson($argv[2]); $order = loadJson($argv[3]);
-            foreach (['token', 'fingerprint', 'idempotency_key'] as $key) if (empty($telemetry[$key])) throw new RuntimeException('Complete buildRequest() telemetry with a stable idempotency_key is required');
+            if (empty($telemetry['idempotency_key']) || (empty($telemetry['browser_receipt']) && (empty($telemetry['token']) || empty($telemetry['fingerprint'])))) throw new RuntimeException('Complete buildRequest() telemetry with a stable idempotency_key is required');
             $amount = $order['amount'] ?? null;
             if (!is_string($order['customerId'] ?? null) || $order['customerId'] === '' || !is_string($order['paymentId'] ?? null) || $order['paymentId'] === '' || (!is_int($amount) && !is_float($amount)) || !is_finite((float)$amount) || $amount < 0) throw new RuntimeException('Trusted order needs customerId, paymentId, and a finite nonnegative amount');
-            $request = array_intersect_key($telemetry, array_flip(['token', 'fingerprint', 'behavior', 'environment', 'idempotency_key']));
+            $request = array_intersect_key($telemetry, array_flip(['browser_receipt', 'token', 'fingerprint', 'behavior', 'environment', 'idempotency_key']));
             $request['context'] = ['event_type' => 'checkout', 'account_id' => $order['customerId'], 'order_amount' => $amount, 'payment_hash' => $order['paymentId']];
             $decision = $client->verify($request);
             $output = ['allowed' => $decision['action'] === 'allow', 'decision' => $decision];
